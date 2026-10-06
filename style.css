@@ -1,0 +1,113 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+  font-size: 14px; color: #222; background: #f6f6f4;
+}
+/* 見出しと凡例はスクロールしても常に上に表示(縦幅は小さく) */
+header { padding: 5px 16px 5px; background: #fff; border-bottom: 1px solid #ccc; position: sticky; top: 0; z-index: 5; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+header .top { display: flex; align-items: baseline; gap: 12px; }
+h1 { margin: 0; font-size: 16px; white-space: nowrap; }
+.sub { color: #555; font-size: 12px; flex: 1; }
+.ver { color: #888; font-size: 11px; white-space: nowrap; }
+main { padding: 16px 24px; }
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+textarea {
+  width: 100%; height: 34vh; min-height: 160px; padding: 10px; font-size: 15px; line-height: 1.7;
+  border: 1px solid #bbb; border-radius: 6px; font-family: inherit; resize: vertical;
+}
+button {
+  padding: 7px 16px; border: 1px solid #2a5db0; background: #2a5db0; color: #fff; border-radius: 6px;
+  font-size: 14px; cursor: pointer;
+}
+button:disabled { background: #9ab; border-color: #9ab; cursor: default; }
+button.ghost { background: #fff; color: #2a5db0; }
+label.file {
+  padding: 6px 12px; border: 1px solid #888; border-radius: 6px; background: #fff; cursor: pointer;
+}
+label.file input { display: none; }
+.muted { color: #777; }
+.result { margin-top: 16px; }
+.summary { justify-content: space-between; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 6px 0 10px; }
+.filters label { cursor: pointer; white-space: nowrap; }
+.filters .lv { font-weight: bold; margin-right: 2px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { border: 1px solid #ddd; padding: 6px 8px; vertical-align: top; text-align: left; }
+th { background: #eef1f5; position: sticky; top: var(--hh, 0); z-index: 1; }   /* 上部の固定部分のすぐ下に止める */
+.c-line { width: 3em; } .c-kind { width: 8.5em; } .c-page { width: 4.5em; } .c-hit { width: 24%; } .c-sug { width: 15%; } .c-dic { min-width: 14em; }
+td.hit .ctx { color: #888; }
+td.hit mark { background: #ffe38a; padding: 0 1px; font-weight: bold; }
+td.dic { font-size: 13px; color: #333; }
+td.dic b { color: #000; }
+td.dic .one { margin-bottom: 4px; }
+.lv-要修正 { color: #b3261e; font-weight: bold; }
+.lv-要確認 { color: #d32f2f; font-weight: bold; }   /* 警告: 赤 */
+.lv-参考 { color: #2a5db0; }
+.lv-使用可 { color: #2e7d32; }
+.lv-辞書に語なし { color: #555; }
+tr.k-ok td { background: #f6fbf6; }
+tr.k-char td { background: #fafafa; }
+tr.row-要修正 td { background: #ffe9e7; }
+tr.row-要確認 td { background: #fff3f2; }   /* 要確認の行も赤系で目立たせる */
+tr.k-second td, tr.k-yomi td { background: #f7faff; }
+footer { padding: 12px 24px 24px; font-size: 12px; }
+td.dic .head { font-size: 12px; font-weight: bold; margin: 2px 0; }
+td.dic .head.ok { color: #2e7d32; }
+td.dic .head.ng { color: #d32f2f; margin-top: 6px; }
+td.dic .head.ng.other { color: #8d5524; }   /* 「そのほかの見出し」の文字だけ茶色(ユーザー指示) */
+td.dic .head.ng ~ .one { color: #b3261e; border-left: 3px solid #e57373; padding-left: 6px; }   /* 使わない(または確認が要る)見出しの項目 */
+td.dic .head.ng ~ .one b { color: #b3261e; }
+td.dic .pg { color: #888; font-size: 12px; }
+/* 辞書のページ画像 */
+td.dic .crop { margin: 3px 0 6px; border: 1px solid #ccc; background-color: #fff; background-repeat: no-repeat; cursor: zoom-in; max-width: 100%; }
+td.dic .crop.guess { border: 1px dashed #d32f2f; }
+td.dic .guessnote { font-size: 11px; color: #d32f2f; margin-top: -4px; }
+#pageview { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 10; display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+#pageview[hidden] { display: none; }
+#pageview .pvwrap { background: #fff; padding: 10px; border-radius: 6px; max-height: 96vh; display: flex; flex-direction: column; align-items: center; }
+#pageview .pvcap { font-size: 13px; margin-bottom: 6px; }
+#pageview .pvpage { position: relative; height: calc(96vh - 60px); aspect-ratio: 315 / 450; }
+#pageview .pvpage img { width: 100%; height: 100%; display: block; }
+#pvbox { position: absolute; border: 3px solid #d32f2f; box-shadow: 0 0 0 2000px rgba(255,255,255,.35); pointer-events: none; }
+#pageview .pvhint { font-size: 12px; color: #777; margin-top: 4px; }
+
+
+.legend { margin-top: 3px; padding: 2px 8px; border: 1px solid #d6d2c4; background: #fbfaf5; border-radius: 4px; font-size: 12px; }
+.legend-title { font-weight: bold; color: #666; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 0 12px; line-height: 1.55; }
+.legend-row b { margin-right: 2px; }
+.legend .box { display: inline-block; min-width: 1.25em; padding: 0 1px; border: 1px solid #555; border-radius: 2px; text-align: center; line-height: 1.2; font-weight: normal; }
+.legend-note { font-size: 11px; color: #777; line-height: 1.45; }
+
+/* 誤った結果を報告 */
+.c-rep { width: 8.5em; }
+td.rep button { padding: 3px 6px; font-size: 12px; }
+td.rep .rep-open { white-space: normal; line-height: 1.3; }
+td.rep textarea { width: 100%; height: 5.5em; font-size: 12px; padding: 4px; margin-bottom: 4px; border: 1px solid #bbb; border-radius: 4px; font-family: inherit; }
+td.rep .rep-msg { font-size: 11px; margin-top: 3px; }
+td.rep .rep-done { color: #2e7d32; font-size: 12px; font-weight: bold; }
+td.rep:has(textarea) { min-width: 15em; }   /* 書いている間は広げる */
+.keynote { font-size: 12px; color: #555; margin: 2px 0 4px; }
+/* 見出しの検索 */
+.search { margin-bottom: 10px; }
+.search .search-label { font-weight: bold; }
+#q { width: 18em; padding: 5px 8px; font-size: 15px; border: 1px solid #bbb; border-radius: 6px; font-family: inherit; }
+.qresult { max-height: 45vh; overflow: auto; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+.qresult .qrow { display: flex; gap: 10px; padding: 4px 0; border-bottom: 1px solid #eee; }
+.qresult .qpg { color: #888; width: 4em; flex: none; }
+.qresult .qdic b { color: #000; }
+.qresult .crop { margin: 3px 0 2px; border: 1px solid #ccc; background-color: #fff; background-repeat: no-repeat; cursor: zoom-in; max-width: 100%; }
+.qresult .qsep { font-weight: bold; color: #555; margin: 8px 0 2px; }
+.text-head { display: flex; align-items: baseline; gap: 12px; margin: 4px 0 4px; }
+.box-title { font-weight: bold; font-size: 14px; }
+.text-head .keynote { margin: 0; }
+
+
+/* 公開サイトの入口(パスワード) */
+#gate { position: fixed; inset: 0; z-index: 50; background: #f6f6f4; display: flex; align-items: center; justify-content: center; }
+#gateform { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 24px 28px; width: 340px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+#gateform .gate-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+#gateform .gate-text { font-size: 13px; color: #555; margin-bottom: 12px; }
+#gateform input[type=password] { width: 100%; padding: 8px; font-size: 15px; border: 1px solid #bbb; border-radius: 6px; margin-bottom: 10px; }
+#gateform .gate-keep { display: block; font-size: 12px; color: #555; margin-top: 10px; cursor: pointer; }
+#gatemsg { font-size: 13px; color: #b3261e; margin-top: 8px; min-height: 1.2em; }

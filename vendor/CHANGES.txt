@@ -1,0 +1,5 @@
+kuromoji.js 0.1.2 (https://github.com/takuyaa/kuromoji.js, Apache License 2.0)
+変更点(漢字チェッカー):
+- BrowserDictionaryLoader.prototype.loadArrayBuffer の先頭に、window.KUROMOJI_EMBED に
+  base64 で埋め込んだ辞書を読む処理を追加した(ダブルクリックで開いたページでも辞書を読めるように)。
+- 辞書ファイル dict/*.dat.gz は内容を変えず、base64 にして kuromoji-dict.js に埋め込んだ。

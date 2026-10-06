@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>漢字チェッカー(漢字表記辞典)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css?v=20261007042152">
+</head>
+<body>
+<div id="gate">
+  <form id="gateform" autocomplete="on">
+    <div class="gate-title">漢字チェッカー</div>
+    <div class="gate-text">パスワードを入れてください(チーム内での利用に限ります)。</div>
+    <input type="password" id="gatepw" autocomplete="current-password" autofocus>
+    <button id="gatebtn">開く</button>
+    <label class="gate-keep"><input type="checkbox" id="gatekeep"> このブラウザに記憶する</label>
+    <div id="gatemsg"></div>
+  </form>
+</div>
+<header>
+  <div class="top">
+    <h1>漢字チェッカー</h1>
+    <div class="sub">原稿の漢字をすべて一覧にし、漢字表記辞典に照らして使用の可否を示します(使用不可・要確認・参考・使用可・辞書に語なし)。かな書きは指摘しません。</div>
+    <div class="ver" id="ver"></div>
+  </div>
+  <section class="legend" aria-label="辞書の凡例(原本の各ページ下部に印刷されているもの)">
+    <div class="legend-row">
+      <span class="legend-title">凡例</span>
+      <span><b>〔 〕</b>使わない漢字</span>
+      <span><b>×</b>表外字(常用漢字表にない字)</span>
+      <span><b>▲</b>表外音訓(常用漢字表にない読み)</span>
+      <span><b class="box">1</b>〜<b class="box">6</b> 教育漢字の学年配当</span>
+      <span><b>①—②</b>(①の表記を優先するが，②の表記を使ってもよい語)</span>
+      <span><b class="box">特</b>表外字・表外音訓を用いてよい特例の語</span>
+      <span><b class="box">付</b>常用漢字表の付表の語</span>
+      <span><b class="box">送</b>送りがなを省く特例</span>
+      <span><b class="box">読</b>読みがなを付けるのが望ましい語</span>
+      <span><b>＊</b>類語・言いかえ例</span>
+    </div>
+    <div class="legend-note">この画面の「辞書の項目」では、囲み数字を [1]〜[6]、囲み文字を 【特】【付】【送】【読】、＊を ※ で表しています。太字が辞書の採用表記、{ }はルビ(上段の音／下段の訓。読みがない側は —)、《 》は分野、〜は見出し語の代わりです。</div>
+  </section>
+</header>
+
+<main>
+  <section class="search" aria-label="見出しの検索">
+    <div class="row">
+      <label for="q" class="search-label box-title">見出しを検索(ひらがな)</label>
+      <input type="search" id="q" placeholder="例: ほほえむ" autocomplete="off" spellcheck="false">
+      <span id="qcount" class="muted"></span>
+    </div>
+    <div id="qresult" class="qresult" hidden></div>
+  </section>
+
+  <section class="input">
+    <div class="row">
+      <label class="file">.txt を読み込む<input type="file" id="file" accept=".txt,text/plain"></label>
+      <span id="filename" class="muted"></span>
+      <button id="run" disabled>チェックする</button>
+      <button id="clear" class="ghost">クリア</button>
+      <span id="status" class="muted">解析器を準備しています…</span>
+    </div>
+    <div class="text-head"><label for="text" class="box-title">チェックする文章を入力</label><span class="keynote">SHIFT+エンターで改行</span></div>
+    <textarea id="text" placeholder="ここに原稿を貼り付けるか、.txt を読み込んでください。エンターでチェックします。"></textarea>
+  </section>
+
+  <section class="result" id="result" hidden>
+    <div class="row summary">
+      <div id="summary"></div>
+      <button id="csv" class="ghost">CSVで保存</button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <table id="table">
+      <thead>
+        <tr><th class="c-line">行</th><th class="c-hit">該当箇所</th><th class="c-kind">種別</th><th class="c-sug">推奨表記</th><th class="c-dic">辞書の項目</th><th class="c-page">辞書</th><th class="c-rep">報告</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div id="none" class="muted" hidden>指摘はありません。</div>
+  </section>
+</main>
+
+<div id="pageview" hidden>
+  <div class="pvwrap"><div class="pvcap" id="pvcap"></div>
+    <div class="pvpage"><img id="pvimg" alt="辞書のページ"><div id="pvbox"></div></div>
+    <div class="pvhint">クリックまたは Esc で閉じる</div></div>
+</div>
+<footer class="muted">
+  判定は辞書の本文だけによるもので、最終判断は人が行ってください。辞書の解説部(本の前半)の総則は含みません。
+  形態素解析: kuromoji.js(Apache License 2.0, vendor/ 参照)。辞書データはチーム内での利用に限ります。
+</footer>
+
+<script src="gate.js?v=20261007042152"></script>
+</body>
+</html>
