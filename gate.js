@@ -1,7 +1,7 @@
 /* 公開サイトの入口: パスワードで辞書データと紙面の画像を復号してから、画面のプログラムを読み込む */
 (function () {
   'use strict';
-  var CFG = {"salt": "X/srLQ8lc44axKxxqtHmVw==", "iter": 600000, "v": "20261007042152", "check": "nK4sUxdtjYSKcx1OYUdkEjUHV5YGjwYlnX497palDlsYghBLLPhJbvs="};
+  var CFG = {"salt": "X/srLQ8lc44axKxxqtHmVw==", "iter": 600000, "v": "20261007043122", "check": "nK4sUxdtjYSKcx1OYUdkEjUHV5YGjwYlnX497palDlsYghBLLPhJbvs="};
   var SCRIPTS = ["vendor/kuromoji.js", "vendor/kuromoji-dict.js", "rules.js", "engine.js", "report-config.js", "app.js"];
   var STORE = 'kanji-checker-key';
   var key = null, cache = {};

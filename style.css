@@ -82,7 +82,7 @@ td.dic .guessnote { font-size: 11px; color: #d32f2f; margin-top: -4px; }
 /* 誤った結果を報告 */
 .c-rep { width: 8.5em; }
 td.rep button { padding: 3px 6px; font-size: 12px; }
-td.rep .rep-open { white-space: normal; line-height: 1.3; }
+td.rep .rep-open, .qresult .qrep .rep-open { white-space: nowrap; line-height: 1.3; }   /* 「を」の後の改行だけで折り返す */
 td.rep textarea { width: 100%; height: 5.5em; font-size: 12px; padding: 4px; margin-bottom: 4px; border: 1px solid #bbb; border-radius: 4px; font-family: inherit; }
 td.rep .rep-msg { font-size: 11px; margin-top: 3px; }
 td.rep .rep-done { color: #2e7d32; font-size: 12px; font-weight: bold; }
@@ -101,6 +101,14 @@ td.rep:has(textarea) { min-width: 15em; }   /* 書いている間は広げる */
 .text-head { display: flex; align-items: baseline; gap: 12px; margin: 4px 0 4px; }
 .box-title { font-weight: bold; font-size: 14px; }
 .text-head .keynote { margin: 0; }
+/* 見出しの検索の報告ボタン(表の報告の列と同じ見た目) */
+.qresult .qdic { flex: 1; }
+.qresult .qrep { flex: none; width: 8.5em; }
+.qresult .qrep button { padding: 3px 6px; font-size: 12px; line-height: 1.3; }
+.qresult .qrep textarea { width: 100%; height: 5.5em; font-size: 12px; padding: 4px; margin-bottom: 4px; border: 1px solid #bbb; border-radius: 4px; font-family: inherit; }
+.qresult .qrep:has(textarea) { width: 15em; }
+.qresult .qrep .rep-msg { font-size: 11px; margin-top: 3px; }
+.qresult .qrep .rep-done { color: #2e7d32; font-size: 12px; font-weight: bold; }
 
 
 /* 公開サイトの入口(パスワード) */

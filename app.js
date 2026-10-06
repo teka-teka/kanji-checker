@@ -129,7 +129,8 @@
     $('qresult').innerHTML = all.length ? all.slice(0, MAXQ).map(function (id, k) {
       var e = DATA.entries[id];
       return (k === pre.length ? '<div class="qsep">部分一致</div>' : '') +
-        '<div class="qrow"><span class="qpg">p.' + e.p + '</span><div class="qdic">' + dicHtml(id) + '</div></div>';
+        '<div class="qrow"><span class="qpg">p.' + e.p + '</span><div class="qdic">' + dicHtml(id) + '</div>' +
+        '<div class="qrep" data-id="' + id + '">' + qRepCell(id) + '</div></div>';
     }).join('') : '<div class="muted">見つかりませんでした。</div>';
     $('qresult').hidden = false;
     watchCrops();
@@ -220,35 +221,64 @@
   function pagesText(f) { return f.entries.map(function (id) { return 'p.' + DATA.entries[id].p; }).join(' '); }
 
   // ---- 誤った結果を報告(送り先は report-config.js。Google スプレッドシートに1行ずつたまる) ----
+  var REP_LABEL = '誤った結果を<br>報告';   // ボタンの文字は「を」で改行(2026-10-07 ユーザー指示)
+  function sendReport(body, btn, msg, done) {
+    var url = (window.KANJI_REPORT || {}).url;
+    if (!url) { msg.textContent = '送り先が未設定です(report-config.js)。'; return; }
+    btn.disabled = true; msg.textContent = '送っています…';
+    // 送り先は別のサイトなので返事は読めない(no-cors)。送信できれば報告済みとする
+    fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+      .then(done)
+      .catch(function (e) { btn.disabled = false; msg.textContent = '送れませんでした(ネット接続を確かめてください): ' + e; });
+  }
+  var REP_FORM = '<textarea class="rep-cm" placeholder="どこが誤りか(任意)"></textarea>' +
+    '<button class="rep-send">送る</button> <button class="rep-cancel ghost">やめる</button><div class="rep-msg muted"></div>';
   $('table').addEventListener('click', function (ev) {
-    var t = ev.target, cell = t.closest && t.closest('td.rep');
+    var t = (ev.target.closest && ev.target.closest('button')) || ev.target, cell = t.closest && t.closest('td.rep');   // ボタン内の改行(br)を押しても効くように
     if (!cell) { return; }
     var f = visible()[+cell.dataset.i];
     if (t.classList.contains('rep-open')) {
-      cell.innerHTML = '<textarea class="rep-cm" placeholder="どこが誤りか(任意)"></textarea>' +
-        '<button class="rep-send">送る</button> <button class="rep-cancel ghost">やめる</button><div class="rep-msg muted"></div>';
+      cell.innerHTML = REP_FORM;
       cell.querySelector('textarea').focus();
     } else if (t.classList.contains('rep-cancel')) {
       cell.innerHTML = repCell(f);
     } else if (t.classList.contains('rep-send')) {
-      var url = (window.KANJI_REPORT || {}).url;
-      var msg = cell.querySelector('.rep-msg');
-      if (!url) { msg.textContent = '送り先が未設定です(report-config.js)。'; return; }
-      t.disabled = true; msg.textContent = '送っています…';
       var body = {
         time: new Date().toLocaleString('ja-JP'), version: DATA.version, file: $('filename').textContent || '',
         line: f.line, text: f.text, before: f.before, after: f.after, kind: KIND[f.kind].label, level: KIND[f.kind].level,
         suggest: f.suggest || '', note: f.note || '', dic: dicText(f), pages: pagesText(f),
         comment: cell.querySelector('textarea').value
       };
-      // 送り先は別のサイトなので返事は読めない(no-cors)。送信できれば報告済みとする
-      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
-        .then(function () { f.reported = true; cell.innerHTML = repCell(f); })
-        .catch(function (e) { t.disabled = false; msg.textContent = '送れませんでした(ネット接続を確かめてください): ' + e; });
+      sendReport(body, t, cell.querySelector('.rep-msg'), function () { f.reported = true; cell.innerHTML = repCell(f); });
+    }
+  });
+
+  // 見出しの検索の結果からの報告(項目ごと)。種別は「見出しの検索」、ファイル名の欄は「(見出しの検索)」
+  var qReported = {};
+  function qRepCell(id) {
+    return qReported[id] ? '<span class="rep-done">報告済み</span>' : '<button class="rep-open ghost">' + REP_LABEL + '</button>';
+  }
+  $('qresult').addEventListener('click', function (ev) {
+    var t = ev.target.closest ? ev.target.closest('button') : null, cell = t && t.closest('.qrep');
+    if (!cell) { return; }
+    var id = +cell.dataset.id, e = DATA.entries[id];
+    if (t.classList.contains('rep-open')) {
+      cell.innerHTML = REP_FORM;
+      cell.querySelector('textarea').focus();
+    } else if (t.classList.contains('rep-cancel')) {
+      cell.innerHTML = qRepCell(id);
+    } else if (t.classList.contains('rep-send')) {
+      var body = {
+        time: new Date().toLocaleString('ja-JP'), version: DATA.version, file: '(見出しの検索)',
+        line: '', text: $('q').value, before: '', after: '', kind: '見出しの検索', level: '',
+        suggest: '', note: '', dic: e.d.replace(/\*\*/g, ''), pages: 'p.' + e.p,
+        comment: cell.querySelector('textarea').value
+      };
+      sendReport(body, t, cell.querySelector('.rep-msg'), function () { qReported[id] = true; cell.innerHTML = qRepCell(id); });
     }
   });
   function repCell(f) {
-    return f.reported ? '<span class="rep-done">報告済み</span>' : '<button class="rep-open ghost">誤った結果を報告</button>';
+    return f.reported ? '<span class="rep-done">報告済み</span>' : '<button class="rep-open ghost">' + REP_LABEL + '</button>';
   }
 
   // ---- CSV(Excel で開けるよう BOM 付き UTF-8) ----
